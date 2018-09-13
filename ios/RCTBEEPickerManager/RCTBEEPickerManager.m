@@ -13,7 +13,6 @@
 @interface RCTBEEPickerManager()
 
 @property(nonatomic,strong)BzwPicker *pick;
-@property(nonatomic,assign)float height;
 @property(nonatomic,weak)UIWindow * window;
 
 @end
@@ -73,14 +72,8 @@ RCT_EXPORT_METHOD(_init:(NSDictionary *)indic){
         }
 
     }];
-
-    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 9.0 ) {
-        self.height=250;
-    }else{
-        self.height=220;
-    }
     
-    self.pick=[[BzwPicker alloc]initWithFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, self.height) dic:dataDic leftStr:pickerCancelBtnText centerStr:pickerTitleText rightStr:pickerConfirmBtnText topbgColor:pickerToolBarBg bottombgColor:pickerBg leftbtnbgColor:pickerCancelBtnColor rightbtnbgColor:pickerConfirmBtnColor centerbtnColor:pickerTitleColor selectValueArry:selectArry weightArry:weightArry pickerToolBarFontSize:pickerToolBarFontSize pickerFontSize:pickerFontSize pickerFontColor:pickerFontColor  pickerRowHeight: pickerRowHeight pickerFontFamily:pickerFontFamily];
+    self.pick=[[BzwPicker alloc]initWithFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT) dic:dataDic leftStr:pickerCancelBtnText centerStr:pickerTitleText rightStr:pickerConfirmBtnText topbgColor:pickerToolBarBg bottombgColor:pickerBg leftbtnbgColor:pickerCancelBtnColor rightbtnbgColor:pickerConfirmBtnColor centerbtnColor:pickerTitleColor selectValueArry:selectArry weightArry:weightArry pickerToolBarFontSize:pickerToolBarFontSize pickerFontSize:pickerFontSize pickerFontColor:pickerFontColor  pickerRowHeight: pickerRowHeight pickerFontFamily:pickerFontFamily];
     
     _pick.bolock=^(NSDictionary *backinfoArry){
 
@@ -102,9 +95,9 @@ RCT_EXPORT_METHOD(show){
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [UIView animateWithDuration:.3 animations:^{
-
-                [_pick setFrame:CGRectMake(0, SCREEN_HEIGHT-self.height, SCREEN_WIDTH, self.height)];
-
+                [_pick setFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
+            } completion:^(BOOL finished) {
+                _pick.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.6];
             }];
         });
     }return;
@@ -113,13 +106,15 @@ RCT_EXPORT_METHOD(show){
 RCT_EXPORT_METHOD(hide){
 
     if (self.pick) {
+        _pick.backgroundColor = [UIColor clearColor];
         dispatch_async(dispatch_get_main_queue(), ^{
             [UIView animateWithDuration:.3 animations:^{
-                [_pick setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, self.height)];
+                [_pick setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT)];
+            } completion:^(BOOL finished) {
+
             }];
         });
     }
-
     self.pick.hidden=YES;
 
     return;

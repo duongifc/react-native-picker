@@ -39,13 +39,23 @@
             [self selectRow];
         });
     }
+
     return self;
 }
 -(void)makeuiWith:(NSArray *)topbgColor With:(NSArray *)bottombgColor With:(NSArray *)leftbtnbgColor With:(NSArray *)rightbtnbgColor With:(NSArray *)centerbtnColor
 {
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0,0, self.frame.size.width, 40)];
+    float pickerHeight = 200;
+    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 9.0 ) {
+        pickerHeight = 250;
+    }
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_HEIGHT - pickerHeight, self.frame.size.width, 40)];
     view.backgroundColor = [self colorWith:topbgColor];
     [self addSubview:view];
+    
+    self.maskButton = [[UIButton alloc] initWithFrame: CGRectMake(0, 0, self.frame.size.width, SCREEN_HEIGHT - pickerHeight)];
+    [self.maskButton addTarget:self action:@selector(cancleAction) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:self.maskButton];
     
     self.leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.leftBtn.frame = CGRectMake(0, 0, 90, 40);
@@ -67,20 +77,26 @@
     [self.rightBtn addTarget:self action:@selector(cfirmAction) forControlEvents:UIControlEventTouchUpInside];  
     [view addSubview:self.rightBtn];
     
-    UILabel *cenLabel=[[UILabel alloc]initWithFrame:CGRectMake(90, 5, SCREEN_WIDTH-180, 30)];
+    UIView *separatorView = [[UIView alloc] init];
+    separatorView.frame = CGRectMake(0,39, view.frame.size.width, 1);
+    separatorView.backgroundColor = [self colorWith:@[@224, @224, @224, @1]];
+    [view addSubview:separatorView];
+    
+    UILabel *cenLabel=[[UILabel alloc]initWithFrame:CGRectMake(91, 5, SCREEN_WIDTH-180, 30)];
     cenLabel.text=self.centStr;
     cenLabel.textAlignment=NSTextAlignmentCenter;
     cenLabel.font = [UIFont fontWithName:_pickerFontFamily size:[_pickerToolBarFontSize integerValue]];
     [cenLabel setTextColor:[self colorWith:centerbtnColor]];
     [view addSubview:cenLabel];
-
-    self.pick = [[UIPickerView alloc] initWithFrame:CGRectMake(0, 40, self.frame.size.width, self.frame.size.height - 40)];
+    
+    self.pick = [[UIPickerView alloc] initWithFrame:CGRectMake(0, view.frame.origin.y + view.frame.size.height, self.frame.size.width, pickerHeight - 40)];
+    
     self.pick.delegate = self;
     self.pick.dataSource = self;
     self.pick.showsSelectionIndicator=YES;
     [self addSubview:self.pick];
     
-    self.pick.backgroundColor=[self colorWith:bottombgColor];
+    self.pick.backgroundColor = [self colorWith:bottombgColor];
 }
 //返回显示的列数
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
@@ -601,6 +617,7 @@
     
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        self.backgroundColor = [UIColor clearColor];
         [UIView animateWithDuration:.2f animations:^{
             
             [self setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, 250)];
